@@ -1,4 +1,4 @@
-export const glasgowStats =[
+export const glasgowStats =
   {
     city_id: 2209,
     city_name: "Glasgow",
@@ -889,4 +889,3 @@ export const glasgowStats =[
     ],
     error: null
   }
-]
