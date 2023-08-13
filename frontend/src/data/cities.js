@@ -1,6 +1,6 @@
 export const cites=
-{
-  cities: [
+
+   [
     {
       city_id: 1,
       city_name: "Herat",
@@ -70329,6 +70329,4 @@ export const cites=
       lng: 4.120665,
       state_code: null
     }
-  ],
-  error: null
-}
+   ]

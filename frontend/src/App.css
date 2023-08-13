@@ -1,4 +1,7 @@
 .leaflet-container {
-  width: 100%;
-  height: 700px;
+  width: 90%;
+  height: 600px;
+  outline:dodgerblue inset;
+  outline-width: 5px;
+  
 }
