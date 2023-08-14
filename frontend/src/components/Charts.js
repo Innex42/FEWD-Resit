@@ -1,9 +1,7 @@
-import React, {useEffect, useState, useMemo} from "react";
+import React, {useEffect, useState} from "react";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
-import { faker, tr } from "@faker-js/faker"
-import { bangkokStats } from "../data/bangkokStats";
-import { glasgowStats } from "../data/glasgowStats";
+
 import Form from 'react-bootstrap/Form';
 
 
