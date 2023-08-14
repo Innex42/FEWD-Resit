@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import Charts from "./Charts";
+import FetchStats from "./FetchStats";
 
 import { bangkokStats } from "../data/bangkokStats";
 import { glasgowStats } from "../data/glasgowStats";
@@ -49,12 +49,12 @@ const CompareInputs = () => {
         setSelectedComparsionData(
             {
                 city1:{
-                    name: city1SearchField,
-                    country: country1SearchField
+                    name: city1SearchField.toLowerCase(),
+                    country: country1SearchField.toLowerCase()
                 },
                 city2:{
-                    name: city2SearchField,
-                    country: country2SearchField
+                    name: city2SearchField.toLowerCase(),
+                    country: country2SearchField.toLowerCase()
                 },
                 category: selectedCategory,
                 valid:true
@@ -142,30 +142,10 @@ const CompareInputs = () => {
             </div>
             
             <div align="center" style={{marginTop:"15px"}}>
-                <Form.Select aria-label="Default select example"
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        align: "center",
-                        width: 40 + '%'
-                    }}
-                    value={selectedCategory} onChange={handleChange}
-                    >
-                    <option disabled={true} value="">Select a Comparsion Category</option>
-                    <option value={1}>Buy Apartment</option>
-                    <option value={2}>Childcare</option>
-                    <option value={3}>Clothing And Shoes</option>
-                    <option value={4}>Markets</option>
-                    <option value={5}>Rent Per Month</option>
-                    <option value={6}>Restaurants</option>
-                    <option value={7}>Salaries And Financing</option>
-                    <option value={8}>Sports And Leisure</option>
-                    <option value={9}>Transportation</option>
-                    <option value={10}>Utilities Per Month</option>
-                </Form.Select>
+                
                 <Button onClick={submitChartData} type="submit" variant="primary" style={{marginTop:"15px", marginBottom:"15px"}}>Compare</Button>
             </div>
-            <Charts  query={selectedComparsionData} />
+            <FetchStats  query={selectedComparsionData} />
             <br />
         </div>
 

@@ -6,6 +6,7 @@ import { bangkokStats } from "../data/bangkokStats";
 import { glasgowStats } from "../data/glasgowStats";
 import Form from 'react-bootstrap/Form';
 
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -16,47 +17,10 @@ ChartJS.register(
 );
 
 
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top',
-    },
-    title: {
-      display: true,
-      text: 'Chart.js Bar Chart',
-    },
-  },
-};
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-
-const categoryLabels = ["","Buy Apartment", "Childcare", "Clothing And Shoes", "Markets", "Rent Per Month", "Restaurants", "Salaries And Financing", "Sports And Leisure", "Transportation", "Utilities Per Month",]
-
-
-export const data = {
-  labels,
-  datasets: [
-    {
-      label: 'Dataset 1',
-      data: labels.map(() => faker.number.int({ min: -1000, max: 1000 })),
-      borderColor: 'rgb(255, 99, 132)',
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
-    },
-    {
-      label: 'Dataset 2',
-      data: labels.map(() => faker.number.int({ min: -1000, max: 1000 })),
-      borderColor: 'rgb(53, 162, 235)',
-      backgroundColor: 'rgba(53, 162, 235, 0.5)',
-    },
-  ],
-};
-
-
-
-
-const Charts = ({query}) => {
+const Charts = ({city1Data, city2Data, valid}) => {
 
   const [selectedCategory, setSelectedCategory] = useState("");
+ 
 
   const handleChange = event => {
     console.log('Label ', event.target.selectedOptions[0].label);
@@ -83,24 +47,24 @@ const Charts = ({query}) => {
     ]
   })
 
+   
 
-  useEffect(() => {
-    
-    const fetchData = async () => {
-      
+  useEffect(() =>{
+    const fetchChart= async () => {
       var city1SelectedPrices=[];
         var city2SelectedPrices=[];
 
         var city1SelectedLabels=[];
         var city2SelectedLabels=[];
 
-        console.log( query);      
-        if(query.valid===true){
-          for(var i=0; i < glasgowStats.prices.length; i++ ){
+        console.log( city1Data, city2Data);  
+        
+        if(valid){
+          for(var i=0; i < city1Data.prices.length; i++ ){
            
-            if (glasgowStats.prices[i].category_id == query.category){
-                city1SelectedPrices.push(glasgowStats.prices[i].avg);
-                city1SelectedLabels.push(glasgowStats.prices[i].item_name)
+            if (city1Data.prices[i].category_id == selectedCategory){
+                city1SelectedPrices.push(city1Data.prices[i].avg);
+                city1SelectedLabels.push(city1Data.prices[i].item_name)
                 
                 
             }
@@ -109,11 +73,11 @@ const Charts = ({query}) => {
         console.log(city1SelectedLabels);
 
 
-        for(i=0; i < bangkokStats.prices.length; i++ ){
+        for(i=0; i < city2Data.prices.length; i++ ){
             
-            if (bangkokStats.prices[i].category_id ==  query.category){
-                city2SelectedPrices.push(bangkokStats.prices[i].avg*0.022);
-                city2SelectedLabels.push(bangkokStats.prices[i].item_name);
+            if (city2Data.prices[i].category_id ==  selectedCategory){
+                city2SelectedPrices.push(city2Data.prices[i].avg);
+                city2SelectedLabels.push(city2Data.prices[i].item_name);
             }
         }
         console.log(city2SelectedPrices);
@@ -124,13 +88,13 @@ const Charts = ({query}) => {
             labels:city1SelectedLabels,
             datasets:[
               {
-                label: "Glasgow",
+                label: city1Data.city_name,
                 data:city1SelectedPrices,
                 borderColor: 'rgb(255, 99, 132)',
                 backgroundColor: 'rgba(255, 99, 132, 0.5)',
               },
               {
-                label: "Bangkok",
+                label: city2Data.city_name,
                 data:city2SelectedPrices,
                 borderColor: 'rgb(53, 162, 235)',
                 backgroundColor: 'rgba(53, 162, 235, 0.5)',
@@ -139,15 +103,12 @@ const Charts = ({query}) => {
           }
         )
         }
+        
+          
+    }
 
-        } 
-
-    fetchData();
-  },[query]);
-
-  useEffect(() =>{
-
-  },[])
+    fetchChart()
+  },[selectedCategory,city1Data,city2Data])
 
 
   return (
@@ -161,9 +122,9 @@ const Charts = ({query}) => {
                         width: 40 + '%'
                     }}
                     value={selectedCategory} onChange={handleChange}
-                    disabled={!query.valid}
+                    disabled={!valid}
                     >
-                    <option disabled={true} value="">Select a Comparsion Category</option>
+                    <option value={""} disabled={true}>Select a category</option>
                     <option value={1}>Buy Apartment</option>
                     <option value={2}>Childcare</option>
                     <option value={3}>Clothing And Shoes</option>
@@ -197,4 +158,4 @@ const Charts = ({query}) => {
   )
 }
 
-export default Charts
+export default Charts;
