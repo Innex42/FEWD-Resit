@@ -2,36 +2,47 @@ import React, { useState } from "react";
 import Map from "./LeafletMap";
 import Button from "react-bootstrap/Button";
 
-import { cites } from "../data/cities";
-import { facts } from "../data/countryFactsData";
 
 
-function MapSearch({ }) {
+
+
+function MapSearch({facts,coords}) {
     const [citySearchField, setCitySearchField] = useState("");
     const [countrySearchField, setCountrySearchField] = useState("");
-
+    const [valid, setValid] = useState(false);
+    const [requestedCityLocation, setRequestedCityLocation] =useState() ;
     let requestedCity;
     let requestedCountry;
 
-    var requestedCityLocation={lat:0,lng:0};
-    var requestedFacts=false;
+    const [requestedFacts, setRequestedFacts]=useState("");
 
     const handleClick = () => {
         requestedCity = citySearchField
         requestedCountry = countrySearchField
         console.log(requestedCity, requestedCountry)
-        requestedCityLocation=false
-        requestedFacts=false
+        
 
+        var indexCheck = coords.findIndex(item => item.city_name.toLowerCase() === requestedCity.toLowerCase() && item.country_name.toLowerCase() === requestedCountry.toLowerCase());
+        console.log(indexCheck)
         //for finding requested city and facts
-         requestedCityLocation = cites.find(item => item.city_name.toLowerCase() === requestedCity.toLowerCase() && item.country_name.toLowerCase() === requestedCountry.toLowerCase());
-         requestedFacts = facts.find(item => item.name.common.toLowerCase() === requestedCountry.toLowerCase());
 
+        if (indexCheck === -1) {
+            setValid(false)
+            console.log("error")
+        } else {
+            var tempCoords= coords.find(item => item.city_name.toLowerCase() === requestedCity.toLowerCase() && item.country_name.toLowerCase() === requestedCountry.toLowerCase());
+            var tempfacts=facts.find(item => item.name.common.toLowerCase() === requestedCountry.toLowerCase());
+            console.log(tempCoords,tempfacts);
+            setRequestedCityLocation(tempCoords); 
+            setRequestedFacts(tempfacts);
+            setValid(true)
+            console.log(requestedCityLocation,requestedFacts)
+        }
         console.log(requestedCityLocation);
         console.log(requestedFacts);
     }
 
-   
+
 
 
     return (
@@ -86,15 +97,22 @@ function MapSearch({ }) {
                     >Search</Button>
                 </div>
 
-            </div>
-            <div id="leafletMap" align="center">
+                <div id="leafletMap" align="center">
 
-            <Map city={requestedCityLocation} facts={requestedFacts} />
+                    <Map city={requestedCityLocation} facts={requestedFacts} valid={valid} />
+
+                </div>
 
             </div>
+
         </>
     )
 
 }
+/*<div id="leafletMap" align="center">
 
+<Map city={requestedCityLocation} facts={requestedFacts} />
+
+</div> */
 export default MapSearch
+

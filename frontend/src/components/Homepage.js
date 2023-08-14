@@ -1,12 +1,11 @@
 import React from "react";
-import MapSearch from "./newMap"
+
+import FetchFactsCoords from "./FetchFactsCoords";
 
 const Homepage = () => {
     return(
-        <MapSearch/>
+        <FetchFactsCoords/>
     );
 };
 
 export default Homepage;
-
-//<MapSearch/>

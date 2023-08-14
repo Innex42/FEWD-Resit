@@ -1,17 +1,14 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
-import Map from "./LeafletMap";
-import Button from "react-bootstrap/Button";
+
 import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { useMapEvents } from 'react-leaflet/hooks'
+import Button from "react-bootstrap/Button";
 
-import { cites } from "../data/cities";
-import { facts } from "../data/countryFactsData";
+
 
 let center = [51.505, -0.09]
 const zoom = 13
 
-const errorMessage="Opps it done goofed";
 
 const customMarker = new L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.5.1/dist/images/marker-icon.png",
@@ -20,30 +17,46 @@ const customMarker = new L.icon({
   popupAnchor: [2, -40]
 });
 
-function DisplayPosition({ map }) {
+function DisplayPosition({ map, facts, coords }) {
   const [position, setPosition] = useState(() => map.getCenter())
 
   const [citySearchField, setCitySearchField] = useState("");
-  const [countrySearchField, setCountrySearchField] = useState("");
-  const [requestedCityLocation, setRequestedCityLocation] = useState("");
-  const [requestedFacts, setRequestedFacts]= useState("");
-  const[popupMessage, setPopupMessage]= useState("")
+    const [countrySearchField, setCountrySearchField] = useState("");
+    const [valid, setValid] = useState(false);
+    const [requestedCityLocation, setRequestedCityLocation] =useState({ lat: 0, lng: 0 }) ;
+    let requestedCity;
+    let requestedCountry;
 
+    const [requestedFacts, setRequestedFacts]=useState("");
     
 
     
 
   const onClick = useCallback(() => {
-    //console.log(citySearchField,countrySearchField);
-    setRequestedCityLocation(cites.find(item => item.city_name.toLowerCase() === citySearchField.toLowerCase() && item.country_name.toLowerCase() === countrySearchField.toLowerCase()));
-    setRequestedFacts(facts.find(item => item.name.common.toLowerCase() === countrySearchField.toLowerCase()));
-    console.log(requestedCityLocation, requestedFacts);
-    if (!requestedCityLocation.lat){
-      center=[0,0];
-      setPopupMessage(errorMessage);
-    } else{
-      center=[requestedCityLocation.lat, requestedCityLocation.lng];
-    }
+    requestedCity = citySearchField
+        requestedCountry = countrySearchField
+        console.log(requestedCity, requestedCountry)
+        console.log(facts);
+
+        var indexCheck = coords.findIndex(item => item.city_name.toLowerCase() === requestedCity.toLowerCase() && item.country_name.toLowerCase() === requestedCountry.toLowerCase());
+        console.log(indexCheck)
+        //for finding requested city and facts
+
+
+        if (indexCheck === -1) {
+            setValid(false)
+            console.log("error")
+        } else {
+            var tempCoords= coords?.find(item => item.city_name.toLowerCase() === requestedCity.toLowerCase() && item.country_name.toLowerCase() === requestedCountry.toLowerCase());
+            var tempfacts=facts?.find(item => item.name.common.toLowerCase() === requestedCountry.toLowerCase());
+            console.log(tempCoords,tempfacts)
+            setRequestedCityLocation(tempCoords) 
+            setRequestedFacts(tempfacts);
+            setValid(true)
+            console.log(requestedCityLocation,requestedFacts)
+        }
+        console.log(requestedCityLocation);
+        console.log(requestedFacts);
     
     map.setView(center, zoom);
     
@@ -115,9 +128,11 @@ function DisplayPosition({ map }) {
 
             </div>
   )
+
+  
 }
 
-function MapSearch() {
+function MapSearch({facts, coords}) {
   const [map, setMap] = useState(null)
 
   const displayMap = useMemo(
@@ -139,7 +154,7 @@ function MapSearch() {
 
   return (
     <div id="leafletMap" align="center">
-      {map ? <DisplayPosition map={map} /> : null}
+      {map ? <DisplayPosition map={map} facts={facts} coords={coords} /> : null}
       {displayMap}
     </div>
   )

@@ -1,37 +1,60 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { useMapEvents } from 'react-leaflet/hooks'
 
 
+function DisplayPosition({ map, city, facts, valid }) {
+  const [position, setPosition] = useState(() => map.getCenter())
+  const [center, setCenter] = useState([51.505, -0.09])
+  const[popupMessage, setPopupMessage]= useState("Please input a city in the Search Bars above.")
 
-
-const Map = ({city, facts}) => {
-
-  if (city===false || facts===false){
-    
-    city={lat:0, lng:0}
-    
-  }
-
-
-  function LocationMarker() {
-    const [position, setPosition] = useState(null)
-    const map = useMapEvents({
-      click() {
-        setPosition([city.lat, city.lng])
-        map.flyTo([city.lat, city.lng], map.getZoom())
-      },
-    })
   
-    return position === null ? null : (
-      <Marker position={position} icon={customMarker}>
-        <Popup>You are here</Popup>
-      </Marker>
-    )
-  }
+
+    useEffect(() => {
+      if (valid){
+      setCenter([city.lat, city.lng]);
+
+      console.log("non error", center );
+
+    } else{
+      console.log("error")
+    }
+    map.setView(center, 10);
+    },[map])
+
+
+  const onMove = useCallback(() => {
+    setPosition(map.getCenter())
+  }, [map])
+
+
+
+
+  useEffect(() => {
+    map.on('move', onMove)
+    return () => {
+      map.off('move', onMove)
+    }
+  }, [map, onMove,])
+
   
+}
+
+
+
+
+const Map = ({city, facts, valid}) => {
+
+  const [newvalid,updatenewvalid]= useState(0)
   
+
+
+   
+
+
+
+  const[popupMessage, setPopupMessage]= useState("Please input a city in the Search Bars above.")
   
   
   const customMarker = new L.icon({
@@ -59,18 +82,29 @@ const Map = ({city, facts}) => {
     }
   }
 
-  return (
-    
-    <div aligin="center" id="map">
-      <MapContainer center={[55.8, -5]} zoom={7} scrollWheelZoom={false}>
+  const [map, setMap] = useState(null)
+
+  const displayMap = useMemo(
+    () => (
+      <MapContainer
+        center={{ lat: 51.505, lng: -0.09 }}
+        zoom={13}
+        scrollWheelZoom={false}
+        ref={setMap}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <LocationMarker />
-
+        
       </MapContainer>
+    ),
+    [],
+  )
 
+  return (
+    <div id="leafletMap" align="center">
+      {map ? <DisplayPosition map={map} city={city} facts={facts} valid={valid} /> : null}
+      {displayMap}
     </div>
   )
 
